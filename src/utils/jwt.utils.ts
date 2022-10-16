@@ -2,9 +2,15 @@ import { config } from "../providers";
 import jwt from "jsonwebtoken";
 
 // sign jwt
-export function singJwt(payload:object, expiresIn:string|number){
+export function singJwt(payload:object, expiresIn:string|number, kind:"access"|"refresh"){
+   if(kind==="access"){
     let token = jwt.sign(payload, config().privateKey, {expiresIn:expiresIn})
     return token
+   }else{
+    let token = jwt.sign(payload, config().privateKey, {expiresIn:expiresIn})
+    return token
+   }
+    
 }
 
 
@@ -14,11 +20,12 @@ export function verifyJwt(token:string, kind:"access"|"refresh"){
     {   if(kind==="access")
         {
             let decoded = jwt.verify(token, config().privateKey)
-            return {payload:decoded, expired:false};
+            return {decoded};
         }
         if(kind==="refresh"){
             let decoded = jwt.verify(token, config().publicKey)
-            return {payload:decoded, expired:false};
+
+            return ({payload:decoded});
         }
         
        

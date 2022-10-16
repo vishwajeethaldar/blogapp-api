@@ -19,8 +19,8 @@ async function createSessionhandler(req:Request, res:Response){
               if(!(await verifyHashedPassword(user.password, password)) ){
                   res.send("incorrect password")
               }
-                const accessToken = jwtutils.singJwt({userId:user._id}, '1h')
-                const refreshToken = jwtutils.singJwt({userId:user._id,xyz:"xyz"}, '1y')
+                const accessToken = jwtutils.singJwt({userId:user._id}, '1h', "access")
+                const refreshToken = jwtutils.singJwt({userId:user._id,xyz:"xyz"}, '1y',"refresh")
                 const AT = await Session.create({userId:user._id, token:accessToken, kind:"access", active:true})             
                 const RT = await Session.create({userId:user._id, token:refreshToken, kind:"refresh", active:true})
                
@@ -74,7 +74,7 @@ async function newRefreshToken(req:Request, res:Response){
     const {refreshToken} = req.cookies
 
     if(refreshToken){
-        const Token = jwtutils.singJwt({userId:refreshToken._userId}, '5s');
+        const Token = jwtutils.singJwt({userId:refreshToken._userId}, '1h', "access");
         await Session.updateOne({userId:refreshToken.userId,kind:"access", active:true}, {$set:{token:Token}});
         let newaccessToken = await Session.findOne({userId:refreshToken.userId,kind:"access", active:true});
        

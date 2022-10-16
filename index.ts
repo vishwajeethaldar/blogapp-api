@@ -3,7 +3,6 @@ import cors from "cors"
 import cookieparser from "cookie-parser"
 import routes from './routes'
 import dbConnect from "./src/db/config"
-import { dirname } from "path"
 
 
 const app = express();

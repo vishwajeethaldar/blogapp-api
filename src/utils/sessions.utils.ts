@@ -37,8 +37,8 @@ export const invalidateSession = async(sessionId:string)=>{
 
  export const createSession = async(userId:any)=>{
                try{
-               const accessToken = jwtutils.singJwt({userId:userId}, '5s')
-               const refreshToken = jwtutils.singJwt({userId:userId}, '1y')
+               const accessToken = jwtutils.singJwt({userId:userId}, '1',"access")
+               const refreshToken = jwtutils.singJwt({userId:userId}, '1y',"refresh")
                const AT = await Session.create({userId:userId, token:accessToken, kind:"access", active:true})             
                const RT = await Session.create({userId:userId, token:accessToken, kind:"refresh", active:true})
                return {AT:AT, RT:RT}
