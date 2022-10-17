@@ -3,6 +3,7 @@ import { User } from "../models";
 import { jwtutils } from "../utils";
 import {Session} from "../models"
 import { verifyHashedPassword } from "../utils/argon2Utils";
+import { sessiontype } from "../types/types";
 
 
 // login handler

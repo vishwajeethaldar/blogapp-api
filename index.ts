@@ -3,7 +3,7 @@ import cors from "cors"
 import cookieparser from "cookie-parser"
 import routes from './routes'
 import dbConnect from "./src/db/config"
-
+import ServerlessHttp from "serverless-http"
 
 const app = express();
 app.use(express.json());
@@ -28,3 +28,4 @@ function main(){
     routes(app)
 }
 main()
+

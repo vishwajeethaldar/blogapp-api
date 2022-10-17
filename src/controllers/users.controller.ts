@@ -27,6 +27,9 @@ const userRegister = async(req:Request, res:Response)=>{
 
 */
 
+export const welcome = async(req:Request, res:Response)=>{
+    res.send("Hellow")
+}
 const userRegister = async(req:Request, res:Response)=>{
     const {name, email, password} = req.body
     const hashedPwd = await hashPassword(password)
