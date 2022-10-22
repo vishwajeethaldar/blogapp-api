@@ -13,10 +13,11 @@ async function createSessionhandler(req:Request, res:Response){
        
         try{
             const user = await User.findOne({email:email})
-
+            console.log(user)
             if(user){
               
               console.log(user)
+             
               if(!(await verifyHashedPassword(user.password, password)) ){
                   res.send("incorrect password")
               }
@@ -52,20 +53,25 @@ async function createSessionhandler(req:Request, res:Response){
 // Delete Session Logout
 async function deleteSesson(req:Request, res:Response){
         
-        const {refreshToken} = req.cookies
-  
-        await Session.updateMany({userId:refreshToken.userId, active:true}, {$set:{active:false}}) 
-        
-        res.cookie("refreshToken", "", {
-            maxAge:0,
-            httpOnly:true   
-           }); 
-           res.cookie("accessToken", "", {
-            maxAge:0,
-            httpOnly:true
-           }); 
+        const {refreshToken, accessToken} = req.cookies
 
-        return res.send({sucess:true})    
+        let token = await Session.findOne({_id:accessToken._id})
+        
+        if(token){
+            await Session.deleteOne({_id:token._id}) 
+        }
+        await Session.deleteOne({_id:refreshToken._id}) 
+        
+        // res.cookie("refreshToken", "", {
+        //     maxAge:0,
+        //     httpOnly:true   
+        //    }); 
+        //    res.cookie("accessToken", "", {
+        //     maxAge:0,
+        //     httpOnly:true
+        //    }); 
+
+        return res.send({status:"success"})    
 }
    
 

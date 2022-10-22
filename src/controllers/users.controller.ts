@@ -65,11 +65,13 @@ const userRegister = async(req:Request, res:Response)=>{
              interface tokenData {
                 name:string,
                 email:string,
-                password:string
+                secret:string
             }
 
             let token = req.query.verify?.toString()||"";
-            let {name, email, password}  = jwtutils.verifyJwt(token, "access")?.decoded as tokenData
+           
+            let {name, email, secret}  = jwtutils.verifyJwt(token, "access")?.decoded as tokenData
+            console.log(name, email, secret)
 
             if(!email){
                return res.send("Link Expired please register again")
@@ -80,7 +82,7 @@ const userRegister = async(req:Request, res:Response)=>{
                return  res.send("User Already Registered")
             }
 
-            await User.create({name:name, email:email, password:password})
+            await User.create({name:name, email:email, password:secret})
             return res.send("User Registered Successfully")
 }
 
