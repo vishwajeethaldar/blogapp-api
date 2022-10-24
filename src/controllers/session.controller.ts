@@ -13,33 +13,28 @@ async function createSessionhandler(req:Request, res:Response){
        
         try{
             const user = await User.findOne({email:email})
-            console.log(user)
             if(user){
-              
-              console.log(user)
-             
               if(!(await verifyHashedPassword(user.password, password)) ){
-                  res.send("incorrect password")
+                  return res.send("incorrect password")
               }
-                const accessToken = jwtutils.singJwt({userId:user._id}, '1h', "access")
-                const refreshToken = jwtutils.singJwt({userId:user._id,xyz:"xyz"}, '1y',"refresh")
-                const AT = await Session.create({userId:user._id, token:accessToken, kind:"access", active:true})             
+                const accessToken = jwtutils.singJwt({userId:user._id}, '2m', "access")
+                const refreshToken = jwtutils.singJwt({userId:user._id,xyz:"xyz"}, '30d',"refresh")
+                // const AT = await Session.create({userId:user._id, token:accessToken, kind:"access", active:true})             
                 const RT = await Session.create({userId:user._id, token:refreshToken, kind:"refresh", active:true})
                
-                res.cookie("accessToken", AT, {
-                 maxAge:3600000,
+                res.cookie("accessToken", accessToken, {
+                 maxAge:120000,
                  httpOnly:true
                 });  
                 
                 res.cookie("refreshToken", RT, {
-                 maxAge:3.154e+10,
+                 maxAge:2.628e+9,
                  httpOnly:true   
                 });  
  
-                let decodedToken = jwtutils.verifyJwt(AT.token, "access")
+                let decodedToken = jwtutils.verifyJwt(accessToken, "access")
                 res.status(200).send(decodedToken)
-                           
-                             
+          
             }else{
                 return res.status(401).send("User does not exists")  
             }
@@ -54,44 +49,62 @@ async function createSessionhandler(req:Request, res:Response){
 async function deleteSesson(req:Request, res:Response){
         
         const {refreshToken, accessToken} = req.cookies
-
-        let token = await Session.findOne({_id:accessToken._id})
-        
-        if(token){
-            await Session.deleteOne({_id:token._id}) 
+        if(refreshToken===undefined){
+            return res.send("No session found")
         }
-        await Session.deleteOne({_id:refreshToken._id}) 
-        
-        // res.cookie("refreshToken", "", {
-        //     maxAge:0,
-        //     httpOnly:true   
-        //    }); 
-        //    res.cookie("accessToken", "", {
-        //     maxAge:0,
-        //     httpOnly:true
-        //    }); 
-
-        return res.send({status:"success"})    
+        try{
+            await Session.deleteOne({_id:refreshToken._id})        
+            res.cookie("refreshToken", "", {
+                maxAge:0,
+                httpOnly:true   
+               }); 
+               res.cookie("accessToken", "", {
+                maxAge:0,
+                httpOnly:true
+            }); 
+            return res.send({status:"success"}) 
+        }catch(e:any){
+            return res.status(401).send(e.message)
+        }   
 }
    
 
 // New Refresh Token
 async function newRefreshToken(req:Request, res:Response){
-     
-    const {refreshToken} = req.cookies
-
-    if(refreshToken){
-        const Token = jwtutils.singJwt({userId:refreshToken._userId}, '1h', "access");
-        await Session.updateOne({userId:refreshToken.userId,kind:"access", active:true}, {$set:{token:Token}});
-        let newaccessToken = await Session.findOne({userId:refreshToken.userId,kind:"access", active:true});
-       
-    res.cookie("accessToken", newaccessToken, {
-        maxAge:5000,
-        httpOnly:true
-        }); 
-
-    return res.send(newaccessToken)
+    const {refreshToken, accessToken} = req.cookies
+    
+   try{
+    if(accessToken!==undefined){      
+        const validSession = jwtutils.verifyJwt(accessToken, "access")
+        return res.status(200).send(validSession)
     }
+
+    if(!refreshToken){
+        return res.status(401).send("Invalid Session Login Again")
+    }
+
+    if(!jwtutils.verifyJwt(refreshToken.token, "refresh")){
+        return res.status(401).send("Invalid Session Login Again")
+    }
+
+    let sessionExist = await Session.findOne({_id:refreshToken?._id})
+    if(!sessionExist){
+        return res.status(401).send("Invalid Session Login Again")
+    }
+    const Token = jwtutils.singJwt({userId:refreshToken.userId}, '30s', "access");
+    // await Session.updateOne({userId:refreshToken.userId,kind:"access", active:true}, {$set:{token:Token}}); 
+    res.cookie("accessToken", Token, {
+        maxAge:120000,
+        httpOnly:true
+    }); 
+
+    const decoded = jwtutils.verifyJwt(Token, "access")
+    console.log(decoded);
+    
+    return res.send(decoded)       
+   }catch(e:any){
+    return res.status(401).send("Invalid Session Login Again")
+   }
 }
 
 export {createSessionhandler,deleteSesson,newRefreshToken}

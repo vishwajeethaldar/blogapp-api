@@ -30,6 +30,7 @@ const userRegister = async(req:Request, res:Response)=>{
 export const welcome = async(req:Request, res:Response)=>{
     res.send("Hellow")
 }
+
 const userRegister = async(req:Request, res:Response)=>{
     const {name, email, password} = req.body
     const hashedPwd = await hashPassword(password)
@@ -83,7 +84,20 @@ const userRegister = async(req:Request, res:Response)=>{
             }
 
             await User.create({name:name, email:email, password:secret})
-            return res.send("User Registered Successfully")
+            return res.redirect(`http://localhost:5173/login`)
 }
 
-export {userRegister, verifyUserRegistration}
+const getUserInfo = async(req:Request, res:Response)=>{
+    const id =  req.params.id;    
+    try{
+        let user = await User.findOne({_id:id},{password:0, otp:0,__v:0})
+        if(user){
+            res.send(user)
+        }else{
+            res.status(401).send("user Not Found")
+        }
+    }catch(e:any){
+        return res.status(400).send(e.message)
+    }
+}
+export {userRegister, verifyUserRegistration, getUserInfo}
