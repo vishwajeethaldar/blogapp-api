@@ -44,7 +44,7 @@ export const githubCallBack = async(req:Request, res:Response)=>{
         }
 
         res.cookie("accessToken", tokens.AT, {
-            maxAge:5000,
+            maxAge:3.6e+6,
             httpOnly:true
         });  
         
@@ -53,8 +53,8 @@ export const githubCallBack = async(req:Request, res:Response)=>{
             httpOnly:true   
         });  
     
-        // res.redirect(`${config().DEFAULTURL}/api/session?email=${newUser.email}`)
-        res.send(tokens.AT)
+        res.redirect(`http://localhost:5173/login/git/callback`)
+        // res.send(tokens.AT)
 
     }catch(e:any){
         res.send(e.message)
