@@ -1,13 +1,14 @@
-import mongoose from "mongoose";
+
+import mongoose, { Schema } from "mongoose";
 import {bloginterface} from '../interface/'
 
 const blogSchema = new mongoose.Schema<bloginterface.blog>({
-    category:{type:String, require:true},
-    title:{type:String, require:true},
-    userId:{type:String, required:true},
-    blogId:{type:String, required:true},
-    content:{type:String, required:true}
+    categoryId:{type:Schema.Types.ObjectId, required:true},
+    title:{type:String, required:true, unique:true},
+    userId:{type:Schema.Types.ObjectId, required:true},
+    content:{type:String, required:true},
+    approved:{type:Boolean, default:false}
 })
 
 const blogModel = mongoose.model("blog", blogSchema)
-
+export default blogModel;

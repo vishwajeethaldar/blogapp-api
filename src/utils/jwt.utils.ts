@@ -19,11 +19,11 @@ export function verifyJwt(token:string, kind:"access"|"refresh"){
     try
     {   if(kind==="access")
         {
-            let decoded = jwt.verify(token, config().privateKey)
+            let decoded = jwt.verify(token, config().privateKey) as Object
             return {decoded};
         }
         if(kind==="refresh"){
-            let decoded = jwt.verify(token, config().publicKey)
+            let decoded = jwt.verify(token, config().publicKey) 
 
             return ({payload:decoded});
         }
