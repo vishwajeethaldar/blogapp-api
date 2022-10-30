@@ -13,7 +13,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use(cors({
     credentials:true,
-    origin:"http://localhost:5173"
+    origin:["http://localhost:5173", "http://blog.hindituts.in/"]
 }))
 
 app.get('/', (req, res) =>{
@@ -23,7 +23,7 @@ app.get('/', (req, res) =>{
 function main(){
     app.listen(process.env.PORT||8080, async() => {
         await dbConnect()
-        console.log(`server started on port ${process.env.PORT}`)
+        console.log(`server started on port ${process.env.PORT||8080}`)
     })
     routes(app)
 }

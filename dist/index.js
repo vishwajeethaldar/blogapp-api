@@ -23,7 +23,7 @@ app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)({
     credentials: true,
-    origin: "http://localhost:5173"
+    origin: ["http://localhost:5173", "http://blog.hindituts.in/"]
 }));
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 function main() {
     app.listen(process.env.PORT || 8080, () => __awaiter(this, void 0, void 0, function* () {
         yield (0, config_1.default)();
-        console.log(`server started on port ${process.env.PORT}`);
+        console.log(`server started on port ${process.env.PORT || 8080}`);
     }));
     (0, routes_1.default)(app);
 }
