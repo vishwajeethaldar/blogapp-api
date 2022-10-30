@@ -29,9 +29,9 @@ app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
 });
 function main() {
-    app.listen(8080, () => __awaiter(this, void 0, void 0, function* () {
+    app.listen(process.env.PORT || 8080, () => __awaiter(this, void 0, void 0, function* () {
         yield (0, config_1.default)();
-        console.log('server started on port 8080');
+        console.log(`server started on port ${process.env.PORT}`);
     }));
     (0, routes_1.default)(app);
 }
