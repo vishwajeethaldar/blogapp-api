@@ -9,5 +9,5 @@ const userSchema = new  mongoose.Schema<userInterface.Iuser>({
     role:{type:String, default:"user"}
 })
 
-const User = mongoose.model('user', userSchema)
+const User = mongoose.model('User', userSchema)
 export default User

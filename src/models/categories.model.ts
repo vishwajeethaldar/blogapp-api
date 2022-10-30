@@ -6,5 +6,5 @@ const categorySchema = new mongoose.Schema<bloginterface.category>({
     userId:{type:Schema.Types.ObjectId, required:true},
 })
 
-const categoryModel = mongoose.model("category", categorySchema)
-export default categoryModel;
+const Category = mongoose.model("Category", categorySchema)
+export default Category;

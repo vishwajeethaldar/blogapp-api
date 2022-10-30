@@ -81,20 +81,22 @@ export const getCategoryInfo =  async(req:Request, res:Response)=>{
 
 
 export const getAllCategory =  async(req:Request, res:Response)=>{
-    const {accessToken} = req.cookies
-    const decoded = jwtutils.verifyJwt(accessToken, "access")?.decoded as tokenData
+    // const {accessToken} = req.cookies
+    // const decoded = jwtutils.verifyJwt(accessToken, "access")?.decoded as tokenData
     try{
-        if(!decoded){
-            return res.status(401).send("Session expired ")
-        }
-        const user = await User.findOne({_id:decoded?.userId})
+        // if(!decoded){
+        //     return res.status(401).send("Session expired ")
+        // }
+        // const user = await User.findOne({_id:decoded?.userId})
             
-        if(user?.role==="admin"){
-            const categories = await Category.find({}) 
-            return res.send(categories)
-        }else{
-            return res.status(401).send("As you admin for privillege")
-        }
+        // if(user?.role==="admin"){
+        //     const categories = await Category.find({}) 
+        //     return res.send(categories)
+        // }else{
+        //     return res.status(401).send("As you admin for privillege")
+        // }
+        const categories = await Category.find({}) 
+        return res.send(categories)
     }catch(e:any){
         return res.status(401).send(e.message)
     }

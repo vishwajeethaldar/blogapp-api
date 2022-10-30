@@ -8,6 +8,7 @@ import { AuthenticateUser } from "./src/middleware/userRequired.middleware";
 import { addBlog, deleteBlog, getAllBlog, getBlogInfo, updateBlog } from "./src/controllers/blogs.controller";
 import { addCategory, deleteCategory, getAllCategory, getCategoryInfo, updateCategory } from "./src/controllers/categories.controller";
 import { addComment, deleteComment, getAllComment, getCommentInfo, updateComment } from "./src/controllers/comments.controller";
+
 function routes(app:Express){
 // login
 
@@ -34,7 +35,7 @@ function routes(app:Express){
      app.delete("/api/category/delete/:id", AuthenticateUser, deleteCategory)
      app.patch("/api/category/update/:id", AuthenticateUser, updateCategory)
      app.get("/api/category/getone/:id", AuthenticateUser, getCategoryInfo)
-     app.get("/api/category/getAll",AuthenticateUser, getAllCategory)
+     app.get("/api/category/getAll", getAllCategory)
      
      // Comments
      app.post("/api/comments/add", AuthenticateUser, addComment)

@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import { config } from "../providers";
 import axios from "axios";
 import { User } from "../models";
-import {sessionconfig} from '../utils'
+import {jwtutils, sessionconfig} from '../utils'
 import { hashPassword } from "./argon2Utils";
 import { sessionInterface } from "../interface";
 import { sessiontype } from "../types/types";
@@ -31,24 +31,29 @@ export const githubCallBack = async(req:Request, res:Response)=>{
         let existUser = await User.findOne({email:user.data?.email})
        
         let tokens={
-            AT:{},
-            RT:{}
+            accessToken:"",
+            refreshToken:""
         }
 
         if(!existUser){
             let hashedPwd = await hashPassword(config().DEFAULTPASSCODE)
             let newUser =  await User.create({name:user.data.name, email:user.data.email, passowrd:hashedPwd})
-            tokens= await sessionconfig.createSession(newUser._id) 
+            tokens.accessToken = jwtutils.singJwt({userId:newUser._id}, '2m', "access")
+            tokens.refreshToken = jwtutils.singJwt({userId:newUser._id,xyz:"xyz"}, '30d',"refresh")
+              
         }else{
-           tokens= await sessionconfig.createSession(existUser._id)
+            tokens.accessToken = jwtutils.singJwt({userId:existUser._id, role:existUser.role}, '2m', "access")
+            tokens.refreshToken = jwtutils.singJwt({userId:existUser._id,role:existUser.role}, '30d',"refresh")
+           
         }
 
-        res.cookie("accessToken", tokens.AT, {
-            maxAge:3.6e+6,
+        res.cookie("accessToken", tokens.accessToken, {
+            maxAge:120000,
             httpOnly:true
         });  
+        console.log(tokens.refreshToken);
         
-        res.cookie("refreshToken", tokens.RT, {
+        res.cookie("refreshToken", tokens.refreshToken, {
             maxAge:3.154e+10,
             httpOnly:true   
         });  

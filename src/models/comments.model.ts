@@ -8,5 +8,5 @@ const comentSchema = new mongoose.Schema<bloginterface.comment>({
     parentId:{type:mongoose.Schema.Types.ObjectId, ref:"comment"}
 })
 
-const commentModel = mongoose.model("comment", comentSchema)
-export default commentModel;
+const Comment = mongoose.model("Comment", comentSchema)
+export default Comment;

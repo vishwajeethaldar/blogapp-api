@@ -7,7 +7,7 @@ export function singJwt(payload:object, expiresIn:string|number, kind:"access"|"
     let token = jwt.sign(payload, config().privateKey, {expiresIn:expiresIn})
     return token
    }else{
-    let token = jwt.sign(payload, config().privateKey, {expiresIn:expiresIn})
+    let token = jwt.sign(payload, config().publicKey, {expiresIn:expiresIn})
     return token
    }
     
@@ -23,9 +23,8 @@ export function verifyJwt(token:string, kind:"access"|"refresh"){
             return {decoded};
         }
         if(kind==="refresh"){
-            let decoded = jwt.verify(token, config().publicKey) 
-
-            return ({payload:decoded});
+            let decoded = jwt.verify(token,config().publicKey) as Object
+            return ({decoded});
         }
         
        

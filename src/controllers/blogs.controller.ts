@@ -20,7 +20,8 @@ export const addBlog =  async(req:Request, res:Response)=>{
         }
         const user = await User.findOne({_id:decoded?.userId})       
         if(user?.role==="admin"){
-            const newBlog = await Blog.create({...req.body}) 
+            const nBlog = await Blog.create({...req.body}) 
+            const newBlog = await Blog.findOne({_id:nBlog._id}).populate("userId","name email role").populate("categoryId")
             return res.send(newBlog)
         }else{
             return res.status(401).send("As you admin for privillege")
@@ -61,9 +62,9 @@ export const deleteBlog =  async(req:Request, res:Response)=>{
 export const getBlogInfo =  async(req:Request, res:Response)=>{
     const {accessToken} = req.cookies
     const id = req.params.id
-    const decoded = jwtutils.verifyJwt(accessToken, "access")?.decoded as tokenData
+   
     try{
-        
+        const decoded = jwtutils.verifyJwt(accessToken, "access")?.decoded as tokenData
         if(!decoded){
             return res.status(401).send("Session expired ")
         }
@@ -83,19 +84,21 @@ export const getBlogInfo =  async(req:Request, res:Response)=>{
 
 
 export const updateBlog =  async(req:Request, res:Response)=>{
+    console.log(req.body)
     const {accessToken} = req.cookies
     const id = req.params.id
-    const decoded = jwtutils.verifyJwt(accessToken, "access")?.decoded as tokenData
+
     try{
-        
+        const decoded = jwtutils.verifyJwt(accessToken, "access")?.decoded as tokenData
         if(!decoded){
             return res.status(401).send("Session expired ")
         }
         const user = await User.findOne({_id:decoded?.userId})
             
         if(user?.role==="admin"){
-            const existBlog = await Blog.updateOne({_id:id}, {$set:{...req.body}})
-            return res.send(existBlog)
+            await Blog.updateOne({_id:id}, {$set:{...req.body}})
+            const updatedBlog = await Blog.findOne({_id:id})
+            return res.send(updatedBlog)
         }else{
             return res.status(401).send("As you admin for privillege")
         }
@@ -106,9 +109,22 @@ export const updateBlog =  async(req:Request, res:Response)=>{
 
 
 export const getAllBlog = async(req:Request, res:Response)=>{
+    const {accessToken} = req.cookies
+
     try{
-        const bogsList = await Blog.find({})
+        const decoded = jwtutils.verifyJwt(accessToken, "access")?.decoded as tokenData
+        if(!decoded){
+            const bogsList = await Blog.find({approved:true}).populate("userId","name email role").populate("categoryId")
+            return res.send(bogsList)
+        }
+       const user = await User.findOne({_id:decoded.userId})
+       if(user?.role==="admin"){
+            const bogsList = await Blog.find().populate("userId","name email role").populate("categoryId")
+            return res.send(bogsList)
+       }else{
+        const bogsList = await Blog.find({approved:true}).populate("userId","name email role").populate("categoryId")
         return res.send(bogsList)
+       }
     }catch(e:any){
         return res.status(401).send(e.message)
     }
