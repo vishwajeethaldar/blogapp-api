@@ -13,7 +13,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use(cors({
     credentials:true,
-    origin:["http://localhost:5173", "http://blog.hindituts.in/"]
+    origin:["http://localhost:5173", "http://blog.hindituts.in/","https://vishwajeethaldar.github.io/blogapp-ui"]
 }))
 
 app.get('/', (req, res) =>{
